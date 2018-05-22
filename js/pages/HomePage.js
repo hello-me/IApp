@@ -28,7 +28,7 @@ export default class HomePage extends Component<Props> {
   })
   }
   componentWillUnmount() {
-  this.listener&&this.listener.remove();
+  this.listener&&this.listener.remove(); //ccccc
   }
   render() {
     return (
