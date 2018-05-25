@@ -4,7 +4,13 @@
 import {
  AsyncStorage
 } from 'react-native'
+import GitHubTrending from 'GitHubTrending'
+export var FLAG_STORAGE={flag_popular: 'popular', flag_trending: 'trending'};
 export default class DataRepository {
+constructor(flag) {
+ this.flag = flag;
+ if (flag===FLAG_STORAGE.flag_trending)this.trending=new GitHubTrending()
+}
   fetchRepository(url) { //获取本地数据
   return new Promise((resolve, reject) => {
   this.fetchLocalRepository(url)
@@ -51,19 +57,31 @@ export default class DataRepository {
   }
  fetchNetRepository(url) {
    return new Promise((resolve, reject)=> {
+   if (this.flag===FLAG_STORAGE.flag_trending) {
+   this.trending.fetchTrending(url)
+     .then(result=> {
+      if (!result) {
+      reject(new Error('responseData is null'));
+      return;
+      }
+      this.saveRepository(url, result);
+      resolve(result);
+     })
+   } else {
      fetch(url)
-       .then(response=>response.json())
-       .then(result=> {
-         if(!result) {
+       .then(response => response.json())
+       .then(result => {
+         if (!result) {
            reject(new Error('responseData is null'));
            return;
          }
          resolve(result.items);
          this.saveRepository(url, result.items)
        })
-       .catch(error=> {
-        reject(error)
+       .catch(error => {
+         reject(error)
        })
+   }
    })
  }
   saveRepository(url, items, callBack) {
