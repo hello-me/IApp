@@ -16,7 +16,7 @@ import HTMLView from 'react-native-htmlview'
 export default class TrendingCell extends Component{
   render() {
   let data = this.props.data.item? this.props.data.item:this.props.data
-  let description ='<p>' + data.description + '</p>'
+  let description ='<p>' +data.description + '</p>'
   return <TouchableOpacity
   onPress={this.props.onSelect}
   style={styles.container}
@@ -32,18 +32,20 @@ export default class TrendingCell extends Component{
         a:styles.description,
       }}
     />
-    <Text style={styles.description}>{data.meta}</Text>
+    <Text style={styles.description}>{data.default_branch}</Text>
     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-      <Text style={styles.author}>Build by:</Text>
-    {/*   {data.contributors.map((result, i, arr) => {
-          return <Image
-            key={i}
-            style={{width: 22, height: 22,margin:2}}
-            source={{uri: arr[i]}}
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <Text>Author:</Text>
+          <Image style={{height: 22, width:22}}
+                 source={{uri: data.owner.avatar_url}}
           />
-        })
-        }*/}
+        </View>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Text>Start:</Text>
+          <Text>{this.props.data.stargazers_count}</Text>
+        </View>
+        <Image style={{width:22, height:22}} source={require('../../res/images/ic_star.png')}/>
       </View>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
       </View>
