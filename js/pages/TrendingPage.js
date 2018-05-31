@@ -23,7 +23,7 @@ import LanguageDao, {FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
 import RepositoryDetail from './RepositoryDetail'
 import TimeSpan from '../model/TimeSpan'
 import PopoverTooltip from 'react-native-popover-tooltip'
-const API_URL = 'https://github.com/trending/';
+const API_URL = 'https://api.github.com/search/repositories?q=';
  var timeSpanTextArray =[
   new TimeSpan('今天', 'since=daily')
   ,new TimeSpan('本周', 'since=weekly')
@@ -65,7 +65,7 @@ export default class TrendingPage extends Component {
                 color: 'white',
                 fontWeight: '400'
               }}
-            >趋势</Text>
+            >趋势{this.state.timeSpan.showText}</Text>
             <Image
               style={{width: 12, height:10, marginLeft:5}}
               source={require('../../res/images/ic_spinner_triangle.png')}/>
@@ -73,18 +73,27 @@ export default class TrendingPage extends Component {
       }
       items={[
         {
-          label: 'Item 1',
-          onPress: () => {}
+          label: '今天',
+          onPress: () => {this.onSelectTimeSpan(timeSpanTextArray[0])}
         },
         {
-          label: 'Item 2',
-          onPress: () => {}
+          label: '本周',
+          onPress: () => {this.onSelectTimeSpan(timeSpanTextArray[1])}
+        },
+        {
+          label: '本月',
+          onPress: () => {this.onSelectTimeSpan(timeSpanTextArray[2])}
         }
       ]}
       animationType='timing'
       springConfig={{tension: 90, friction: 3}}
     />
   </View>
+  }
+  onSelectTimeSpan(timeSpan) {
+   this.setState({
+   timeSpan: timeSpan
+   })
   }
   render() {
     let content = this.state.languages.length > 0 ?
@@ -97,7 +106,7 @@ export default class TrendingPage extends Component {
       >
         {this.state.languages.map((result,i, arr)=> {
           let lan=arr[i];
-          return lan.checked ? <TrendingTab key={i} tabLabel={lan.name} {...this.props}></TrendingTab>: null
+          return lan.checked ? <TrendingTab key={i} tabLabel={lan.name} timeSpan={this.state.timeSpan}  {...this.props}></TrendingTab>: null
         })}
       </ScrollableTabView>: null;
     return <View style={styles.container}>
@@ -122,13 +131,22 @@ class TrendingTab extends Component {
     }
   }//
   componentDidMount() {
-  this.loadData();
+  this.loadData(this.props.timeSpan, true);
   }
-  loadData() {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.timeSpan !== this.props.timeSpan) {
+      this.loadData(nextProps.timeSpan)
+    }
+  }
+  onRefresh() {
+  this.loadData(this.props.timeSpan, true)
+  }
+  loadData(timeSpan, isRefresh) {
     this.setState({
       isLoading:true
     })
-    let url=this.genFetchUrl('?since=daily', this.props.tabLabel);
+    let url=this.genFetchUrl(timeSpan, this.props.tabLabel);
+    console.log(url)
     this.dataRespository
       .fetchRepository(url)
       .then(result=> {
@@ -159,7 +177,7 @@ class TrendingTab extends Component {
       })
   }
   genFetchUrl(timeSpan, category) {
-    return API_URL + category + '?' + timeSpan.searchText;
+   return API_URL + category + '?' + timeSpan.searchText
   }
   onSelect(item) {
     this.props.navigator.push({
@@ -186,7 +204,7 @@ class TrendingTab extends Component {
           <RefreshControl
             title='Loading...'
             refreshing={this.state.isLoading}
-            onRefresh={()=>this.loadData()}
+            onRefresh={()=>this.onRefresh()}
             colors={['#2196F3']}
             tintColor={'#2196F3'}
             titleColor={'#2196F3'}
