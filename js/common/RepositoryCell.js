@@ -13,7 +13,31 @@ import {
   View
 } from 'react-native'
 export default class RepositoryCell extends Component{
+  constructor(props) {
+  super(props);
+  this.state = {
+  isFavorite: false,
+  favoriteIcon: require('../../res/images/ic_unstar_transparent.png')
+  }
+  }
+  setFavoriteState(isFavorite) {
+    this.setState({
+      isFavorite: isFavorite,
+      favoriteIcon: isFavorite ? require('../../res/images/ic_star.png') : require('../../res/images/ic_unstar_transparent.png')
+    })
+  }
+  onPressFavorite() {
+  this.setFavoriteState(!this.state.isFavorite);
+  }
   render() {
+    let favoriteButton = <TouchableOpacity
+    onPress={() =>this.onPressFavorite()}
+    >
+    <Image
+    style={{width:22, height: 22, tintColor: '#2196F3'}}
+    source={this.state.favoriteIcon}
+    />
+    </TouchableOpacity>
   return <TouchableOpacity
   onPress={this.props.onSelect}
   style={styles.container}
@@ -32,7 +56,7 @@ export default class RepositoryCell extends Component{
        <Text>Start:</Text>
         <Text>{this.props.data.stargazers_count}</Text>
       </View>
-      <Image style={{width:22, height:22}} source={require('../../res/images/ic_star.png')}/>
+      {favoriteButton}
     </View>
   </View>
   </TouchableOpacity>

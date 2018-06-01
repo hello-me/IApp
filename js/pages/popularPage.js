@@ -12,14 +12,17 @@ import {
   RefreshControl,
   DeviceEventEmitter
 } from 'react-native'
-import DataRepository from '../expand/dao/DataRepository'
+import DataRepository, {FLAG_STORAGE} from '../expand/dao/DataRepository'
 import NavigationBar from '../common/NavigationBar'
 import ScrollableTabView, {ScrollableTabBar} from 'react-native-scrollable-tab-view'
 import RepositoryCell from '../common/RepositoryCell'
 import LanguageDao, {FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
 import RepositoryDetail from './RepositoryDetail'
+import FavoriteDao from '../expand/dao/FavoriteDao'
+import Utils from '../util/Utils'
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR='&sort=stars'
+var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
 export default class PopularPage extends Component {
 constructor(props) {
 super(props)
@@ -75,10 +78,53 @@ class PopularTab extends Component {
    result: '',
     dataSource: new ListView.DataSource({rowHasChanged: (r1, r2)=>r1 !== r2}),
     isLoading: false,
+    favoriteKeys: []
   }
  }//
  componentDidMount() {
+ /*this.listener = DeviceEventEmitter.addListener('favoriteChanged_popular', () => {
+   this.isFavoriteChanged = true;
+ });*/
  this.loadData();
+ }
+/* componentWillUnmount() {
+    if (this.listener) {
+     this.listener.remove();
+    }
+ }*/
+/* componentWillReceiveProps(nextProps) {
+ if (this.isFavoriteChanged) {
+   this.isFavoriteChanged = false;
+   this.getFavoriteKeys();
+   }
+ }*/
+ /*更新ProjectItem 的状态*/
+ flushFavoriteState() {
+  let projectModels = []
+  let items = this.items;
+  for (var i = 0, len = items.length; i < len; i++) {
+     projectModels.push(new ProjectModel(item[i], Utils.checkFavorite(items[i], this.state.favoriteKeys)));
+  }
+  this.updateState({
+   isLoading: false,
+  datasource: this.getDataSource(projectModels)
+  });
+ }
+ getFavoriteKeys() {
+ favoriteDao.getFavoriteKeys()
+   .then(keys => {
+   if (keys) {
+   this.updateState({favoriteKeys:keys})
+   }
+   this.flushFavoriteState();
+   })
+   .catch(e=> {
+   this.flushFavoriteState()
+   })
+ }
+ updateState(dic) {
+  if(!this) return;
+  this.setState(dic)
  }
  loadData() {
  this.setState({
@@ -89,6 +135,7 @@ class PopularTab extends Component {
        .fetchRepository(url)
        .then(result=> {
        let items=result && result.items ? result.items : result ? result : [];
+         this.getFavoriteKeys()
        this.setState({
          dataSource:this.state.dataSource.cloneWithRows(items),
          isLoading: false,
@@ -102,6 +149,7 @@ class PopularTab extends Component {
        })
        .then(items=> {
         if(!items || items.length === 0) return;
+         this.getFavoriteKeys()
         this.setState({
           dataSource:this.state.dataSource.cloneWithRows(items)
         })
@@ -114,6 +162,9 @@ class PopularTab extends Component {
        })
        })
  }
+  getDataSource(items) {
+  return this.state.dataSource.clonewithRows(items)
+  }
   genFetchUrl(key) {
    return URL + key + QUERY_STR;
   }
@@ -126,17 +177,25 @@ class PopularTab extends Component {
     }
    })
   }
+  onFavorite(item, isFavorite) {
+   if (isFavorite) {
+   favoriteDao.saveFavoriteItem(item.id.toString(), JSON.stringify(item))
+   } else {
+   favoriteDao.removeFavoriteItem(item.id.toString())
+   }
+  }
   renderRow(data){
  return <RepositoryCell
- onSelect={() => this.onSelect(data)}
- data={data}
+  onSelect={() => this.onSelect(data)}
+  data={data}
   key={data.id}
+  onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
  />
  }
  render() {
  return <View style={{flex:1}}>
   <ListView
-   dataSource={this.state.dataSource}
+    dataSource={this.state.dataSource}
     renderRow={(data)=> this.renderRow(data)}
     refreshControl={
     <RefreshControl
