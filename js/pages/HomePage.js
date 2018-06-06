@@ -20,8 +20,9 @@ import Toast,{DURATION} from 'react-native-easy-toast'
 export default class HomePage extends Component<Props> {
   constructor(props){
     super(props);
+    let selectedTab=this.props.selectedTab?this.props.selectedTab:'tb_popular';
     this.state={
-      selectedTab: 'tb_polular'
+      selectedTab: selectedTab
     }
   }
   componentDidMount() {
@@ -30,7 +31,7 @@ export default class HomePage extends Component<Props> {
   })
   }
   componentWillUnmount() {
-  this.listener&&this.listener.remove(); //ccccc
+  this.listener&&this.listener.remove();
   }
   _renderTab(Component, selectTab, title, renderIcon) {
    return <TabNavigator.Item

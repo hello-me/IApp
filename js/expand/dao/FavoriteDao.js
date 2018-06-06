@@ -11,7 +11,7 @@ const FAVORITE_KEY_PREFIX='favorire_'
 export default class  FavoriteDao{
   constructor(flag) {
     this.flag = flag;
-    this.favoriteKey = FAVORITE_KEY_PREFIX+flag;
+    this.favoriteKey=FAVORITE_KEY_PREFIX+flag;
   }
  /* 收藏项目，保存收藏项目
  * @param key 项目id
@@ -49,18 +49,18 @@ export default class  FavoriteDao{
    * 获取收藏的Repository 对应的key
    * @result{Promise}*/
   getFavoriteKeys(){
-    return new Promise((resolve, reject) => {
-     AsyncStorage.getItem(this.favoriteKey, (error, result) => {
-      if (!error) {
-      try {
-      reslove(JSON.parse(result));
-      } catch (e) {
-      reject (error);
-      }
-      } else {
-      reject(error);
-      }
-     });
+    return new Promise((resolve,reject)=>{
+      AsyncStorage.getItem(this.favoriteKey,(error,result)=>{
+        if (!error) {
+          try {
+            resolve(JSON.parse(result));
+          } catch (e) {
+            reject(error);
+          }
+        }else {
+          reject(error);
+        }
+      });
     });
   }
   /*取消收藏，移除已经收藏的项目
@@ -83,7 +83,6 @@ export default class  FavoriteDao{
       AsyncStorage.multiGet(keys, (err, stores) => {
         try {
           stores.map((result, i, store) => {
-            let key = store[i][0];
             let value = store[i][1];
             if (value) items.push(JSON.parse(value));
           });

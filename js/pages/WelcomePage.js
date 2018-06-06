@@ -25,14 +25,16 @@ componentDidMount() {
  render() {
  return <View>
   <NavigationBar
-    title={'欢迎'}
+    title={'再看'}
   />
-  <View >
-    <Text>欢迎</Text>
-     <Image style={{flexDirection: 'row', marginLeft: 150, marginTop: 250}}
+  <View style={{flexDirection: 'row', marginLeft: 150, marginTop: 250}}>
+     <Image
             source={require('../../res/images/welcome.png')}
      />
   </View>
+   <View style={{marginLeft: 155}}>
+     <Text>静静的看着你装逼</Text>
+   </View>
  </View>
  }
 }

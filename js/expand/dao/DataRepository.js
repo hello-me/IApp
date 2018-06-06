@@ -2,15 +2,28 @@
  * Created by licong on 2018/5/2.
  */
 import {
- AsyncStorage
-} from 'react-native'
-import GitHubTrending from 'GitHubTrending'
-export var FLAG_STORAGE={flag_popular: 'popular', flag_trending: 'trending'};
+  AsyncStorage,
+} from 'react-native';
+import Trending from "GitHubTrending";
+export var FLAG_STORAGE = {flag_popular: 'popular', flag_trending: 'trending', flag_my: 'my'}
+
 export default class DataRepository {
-constructor(flag) {
- this.flag = flag;
- if (flag===FLAG_STORAGE.flag_trending)this.trending=new GitHubTrending()
-}
+  constructor(flag) {
+    this.flag = flag;
+    if (flag === FLAG_STORAGE.flag_trending)this.treding = new Trending();
+  }
+
+  saveRepository(url, items, callback) {
+    if (!items || !url)return;
+    let wrapData;
+    if (this.flag === FLAG_STORAGE.flag_my) {
+      wrapData = {item: items, update_date: new Date().getTime()};
+    } else {
+      wrapData = {items: items, update_date: new Date().getTime()};
+    }
+    AsyncStorage.setItem(url, JSON.stringify(wrapData), callback);
+  }
+
   fetchRepository(url) {
     return new Promise((resolve, reject)=> {
       this.fetchLocalRepository(url).then((wrapData)=> {
@@ -33,23 +46,25 @@ constructor(flag) {
       })
     })
   }
+
   fetchLocalRepository(url) {
-   return new Promise((resolve, reject) => {
-   AsyncStorage.getItem(url, (error, result) => {
-   if (!error) {
-    try {
-    resolve(JSON.parse(result));
-    } catch(e) {
-    reject(e);
-    console.error(e)
-    }
-   } else {
-   reject(error);
-   console.error(error);
-   }
-   })
-   })
+    return new Promise((resolve, reject)=> {
+      AsyncStorage.getItem(url, (error, result)=> {
+        if (!error) {
+          try {
+            resolve(JSON.parse(result));
+          } catch (e) {
+            reject(e);
+            console.error(e);
+          }
+        } else {
+          reject(error);
+          console.error(error);
+        }
+      })
+    })
   }
+
   fetchNetRepository(url) {
     return new Promise((resolve, reject)=> {
       if (this.flag !== FLAG_STORAGE.flag_trending) {
@@ -82,20 +97,5 @@ constructor(flag) {
         })
       }
     })
-  }
-  saveRepository(url, items, callBack) {
-  if(!url|| !items) return;
-  let wrapData = {items: items, update_date: new Date().getTime()};
-  AsyncStorage.setItem(url, JSON.stringify(wrapData), callBack);
-  }
-  checkData(longtime) {
-  return false;
-  let cDate = new Date();
-  let tDate = new Date();
-  tDate.setTime(longtime);
-  if (cDate.getMonth() !== tDate.getMonth()) return false;
-  if (cDate.getDay() !== tDate.getDay()) return false;
-  if (cDate.getHours()-tDate.getHours() > 4) return false;
-  return true;
   }
 }

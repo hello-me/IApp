@@ -32,24 +32,30 @@ export default class TrendingCell extends Component{
       }}
     />
     <Text style={styles.description}>{data.default_branch}</Text>
-    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text>Author:</Text>
-          <Image style={{height: 22, width:22}}
+
+          <Image style={{height: 22, width:22, marginRight: 5}}
+                 source={require('../../res/images/wanzi.png')}
+          />
+          <Image style={{height: 22, width:22, marginRight: 5}}
+                 source={require('../../res/images/wanzi.png')}
+          />
+          <Image style={{height: 22, width:22, marginRight: 5}}
+                 source={require('../../res/images/wanzi.png')}
+          />
+          <Image style={{height: 22, width:22, marginRight: 5}}
                  source={require('../../res/images/wanzi.png')}
           />
         </View>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text>Start:</Text>
-          <Text>{this.props.data.stargazers_count}</Text>
+          <Text>{data.stargazers_count}</Text>
         </View>
         <Image style={{width:22, height:22}} source={require('../../res/images/ic_star.png')}/>
       </View>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-      </View>
     </View>
-  </View>
   </TouchableOpacity>
   }
 }
