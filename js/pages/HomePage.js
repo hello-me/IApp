@@ -14,6 +14,7 @@ import {
 import TabNavigator from 'react-native-tab-navigator'
 import PopularPage from './popularPage'
 import TrendingPage from './TrendingPage'
+import FavriteDao from './FavoritePage'
 import MyPage from './my/myPage'
 import Toast,{DURATION} from 'react-native-easy-toast'
 export default class HomePage extends Component<Props> {
@@ -49,7 +50,7 @@ export default class HomePage extends Component<Props> {
           <TabNavigator>
             {this._renderTab(PopularPage,'tb_popular','最热',require('../../res/images/ic_polular.png'))}
             {this._renderTab(TrendingPage,'tb_trending','趋势',require('../../res/images/ic_trending.png'))}
-            {this._renderTab(MyPage,'tb_favorite','收藏',require('../../res/images/ic_favorite.png'))}
+            {this._renderTab(FavriteDao,'tb_favorite','收藏',require('../../res/images/ic_favorite.png'))}
             {this._renderTab(MyPage,'tb_my','我的',require('../../res/images/ic_my.png'))}
          </TabNavigator>
          <Toast ref={toast=> this.toast=toast}/>
