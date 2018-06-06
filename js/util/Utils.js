@@ -13,4 +13,18 @@ export default class Utils {
    }
    return false;
  }
+/*
+ * 检查该项目的更新时间
+ * */
+  static checkDate(longTime) {
+    return false;
+    let currentDate = new Date();
+    let targetDate = new Date();
+    targetDate.setTime(longTime);
+    if (currentDate.getMonth() !== targetDate.getMonth())return false;
+    if (currentDate.getDate() !== targetDate.getDate())return false;
+    if (currentDate.getHours() - targetDate.getHours() > 4)return false;
+    // if (currentDate.getMinutes() - targetDate.getMinutes() > 1)return false;
+    return true;
+  }
 }

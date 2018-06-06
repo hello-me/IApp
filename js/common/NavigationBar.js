@@ -10,7 +10,8 @@ import {
   Image,
   StatusBar,
   Text,
-  View
+  View,
+  ViewPropTypes
 } from 'react-native'
 const NAV_BAR_HEIGHT_IOS = 44;
 const NAV_BAR_HEIGHT_ANDROID = 50;
@@ -22,10 +23,10 @@ const StatusBarShape = {
 };
 export default class NavigationBar extends Component {
   static propTypes = {
-    style: View.propTypes.style,
+    style: ViewPropTypes.style,
     title: PropTypes.string,
     titleView: PropTypes.element,
-    titleLayoutStyle:View.propTypes.style,
+    titleLayoutStyle:ViewPropTypes.style,
     hide: PropTypes.bool,
     statusBar: PropTypes.shape(StatusBarShape),
     rightButton:  PropTypes.element,

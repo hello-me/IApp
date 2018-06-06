@@ -2,7 +2,6 @@
  * Created by licong on 2018/5/4.
  */
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import {
   StyleSheet,
   Platform,
@@ -15,7 +14,7 @@ import {
 import HTMLView from 'react-native-htmlview'
 export default class TrendingCell extends Component{
   render() {
-  let data = this.props.data.item? this.props.data.item:this.props.data
+  let data = this.props.data.items? this.props.data.items:this.props.data
   let description ='<p>' +data.description + '</p>'
   return <TouchableOpacity
   onPress={this.props.onSelect}
@@ -38,7 +37,7 @@ export default class TrendingCell extends Component{
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text>Author:</Text>
           <Image style={{height: 22, width:22}}
-                 source={{uri: data.owner.avatar_url}}
+                 source={require('../../res/images/wanzi.png')}
           />
         </View>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>

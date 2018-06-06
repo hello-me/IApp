@@ -8,23 +8,29 @@ import {
   Text,
   AsyncStorage,
   TextInput,
-  WebView
+  TouchableOpacity,
+  WebView,
+  Image
 } from 'react-native'
 import NavigationBar from '../../js/common/NavigationBar'
 import ViewUtils from '../util/ViewUtils'
+import FavoriteDao from '../expand/dao/FavoriteDao'
 // const URL = 'http://www.imooc.com'
 const TRENDING_URL = 'https://github.com/'
 export default class RepositoryDetail extends Component {
   constructor(props) {
     super(props);
-    this.url = this.props.item.html_url ? this.props.item.html_url
-      : TRENDING_URL + this.props.item.fullName;
-    var title = this.props.item.full_name ? this.props.item.full_name
-      : this.props.item.fullName;
+    this.url = this.props.data.html_url ? this.props.data.html_url
+      : TRENDING_URL + this.props.data.fullName;
+    var title = this.props.data.full_name ? this.props.data.full_name
+      : this.props.data.fullName;
+    this.favoriteDao = new FavoriteDao(this.props.flag)
     this.state = {
      url: this.url,
      canGoBack: false,
-     title: title
+     title: title,
+     isFavorite: this.props.data.isFavorite,
+      favoriteIcon: this.props.data.isFavorite ? require('../../res/images/ic_star.png') : require('../../res/images/ic_star_navbar.png')
     }
   }
 search() {
@@ -45,6 +51,32 @@ onBack() {
     url: e.url
    })
  }
+ setFavoriteState(isFavorite) {
+  this.setState({
+   isFavorite: isFavorite,
+    favoriteIcon:  isFavorite ? require('../../res/images/ic_star.png') : require('../../res/images/ic_star_navbar.png')
+  })
+ }
+  onRightButtonClick() {
+   var projectModel = this.props.data;
+   this.setFavoriteState(projectModel.isFavorite = !projectModel.isFavorite);
+   var key = projectModel.fullName ? projectModel.fullName : projectModel.id.toString();
+   if (projectModel.isFavorite) {
+     this.favoriteDao.saveFavoriteItem(key, JSON.stringify(projectModel));
+   } else {
+     this.favoriteDao.removeFavoriteItem(key)
+   }
+  }
+ renderRightButton() {
+ return <TouchableOpacity
+ onPress={()=> this.onRightButtonClick()}
+ >
+ <Image
+ style={{width: 20, height: 20, marginRight: 10}}
+ source={this.state.favoriteIcon}
+ />
+ </TouchableOpacity>
+ }
   render() {
     return (
       <View style={styles.container}>
@@ -54,6 +86,7 @@ onBack() {
             backgroundColor:'#2196F3'
           }}
           leftButton={ViewUtils.getLeftButton(() =>this.onBack())}
+          rightButton={this.renderRightButton()}
         />
       <WebView
       ref={webView=>this.webView = webView}

@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet,
   Text,
+  Image,
   Navigator
 } from 'react-native'
 import NavigationBar from '../common/NavigationBar'
@@ -26,7 +27,12 @@ componentDidMount() {
   <NavigationBar
     title={'欢迎'}
   />
-  <Text>欢迎</Text>
+  <View >
+    <Text>欢迎</Text>
+     <Image style={{flexDirection: 'row', marginLeft: 150, marginTop: 250}}
+            source={require('../../res/images/welcome.png')}
+     />
+  </View>
  </View>
  }
 }

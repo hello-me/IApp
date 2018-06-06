@@ -2,7 +2,6 @@
  * Created by licong on 2018/5/4.
  */
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import {
   StyleSheet,
   Platform,
@@ -15,7 +14,7 @@ import {
 export default class RepositoryCell extends Component{
   constructor(props) {
   super(props);
-  this.state = {
+  this.state = {　/**/
   isFavorite: false,
   favoriteIcon: require('../../res/images/ic_unstar_transparent.png')
   }

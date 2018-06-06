@@ -183,7 +183,7 @@ class TrendingTab extends Component {
     this.props.navigator.push({
       component: RepositoryDetail,
       params: {
-        item: item,
+        data: item,
         ...this.props
       }
     })

@@ -73,7 +73,7 @@ super(props)
 class PopularTab extends Component {
  constructor(props) {
   super(props);
-  this.dataRespository = new DataRepository();
+  this.dataRespository = new DataRepository(FLAG_STORAGE.flag_popular);
   this.state = {
    result: '',
     dataSource: new ListView.DataSource({rowHasChanged: (r1, r2)=>r1 !== r2}),
@@ -172,14 +172,15 @@ class PopularTab extends Component {
    this.props.navigator.push({
     component: RepositoryDetail,
     params: {
-     item: item,
+        data: item,
+        flag: FLAG_STORAGE.flag_popular,
       ...this.props
     }
    })
   }
   onFavorite(item, isFavorite) {
    if (isFavorite) {
-   favoriteDao.saveFavoriteItem(item.id.toString(), JSON.stringify(item))
+   favoriteDao.saveFavoriteItem(item.toString(), JSON.stringify(item))
    } else {
    favoriteDao.removeFavoriteItem(item.id.toString())
    }

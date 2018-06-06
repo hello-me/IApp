@@ -11,32 +11,27 @@ constructor(flag) {
  this.flag = flag;
  if (flag===FLAG_STORAGE.flag_trending)this.trending=new GitHubTrending()
 }
-  fetchRepository(url) { //获取本地数据
-  return new Promise((resolve, reject) => {
-  this.fetchLocalRepository(url)
-    .then(result=> {
-     if (result) {
-             resolve(result);
-     } else {
-     this.fetchNetRepository(url)
-       .then(result=> {
-       resolve(result)
-       })
-       .catch(e=> {
-       resolve(e)
-       })
-     }
-    })
-    .catch(e=> {
-    this.fetchNetRepository(url)
-      .then(result => {
-      resolve(result)
-      })
-      .catch(e=> {
-        resolve(e)
+  fetchRepository(url) {
+    return new Promise((resolve, reject)=> {
+      this.fetchLocalRepository(url).then((wrapData)=> {
+        if (wrapData) {
+          resolve(wrapData, true);
+        } else {
+          this.fetchNetRepository(url).then((data)=> {
+            resolve(data);
+          }).catch((error)=> {
+            reject(error);
+          })
+        }
+
+      }).catch((error)=> {
+        this.fetchNetRepository(url).then((data)=> {
+          resolve(data);
+        }).catch((error=> {
+          reject(error);
+        }))
       })
     })
-  })
   }
   fetchLocalRepository(url) {
    return new Promise((resolve, reject) => {
@@ -55,35 +50,39 @@ constructor(flag) {
    })
    })
   }
- fetchNetRepository(url) {
-   return new Promise((resolve, reject)=> {
-   if (this.flag===FLAG_STORAGE.flag_trending) {
-   this.trending.fetchTrending(url)
-     .then(result=> {
-      if (!result) {
-      reject(new Error('responseData is null'));
-      return;
+  fetchNetRepository(url) {
+    return new Promise((resolve, reject)=> {
+      if (this.flag !== FLAG_STORAGE.flag_trending) {
+        fetch(url)
+          .then((response)=>response.json())
+          .catch((error)=> {
+            reject(error);
+          }).then((responseData)=> {
+          if (this.flag === FLAG_STORAGE.flag_my && responseData) {
+            this.saveRepository(url, responseData)
+            resolve(responseData);
+          } else if (responseData && responseData.items) {
+            this.saveRepository(url, responseData.items)
+            resolve(responseData.items);
+          } else {
+            reject(new Error('responseData is null'));
+          }
+        })
+      } else {
+        this.treding.fetchTrending(url)
+          .then((items)=> {
+            if (!items) {
+              reject(new Error('responseData is null'));
+              return;
+            }
+            resolve(items);
+            this.saveRepository(url, items)
+          }).catch((error)=> {
+          reject(error);
+        })
       }
-      this.saveRepository(url, result);
-      resolve(result);
-     })
-   } else {
-     fetch(url)
-       .then(response => response.json())
-       .then(result => {
-         if (!result) {
-           reject(new Error('responseData is null'));
-           return;
-         }
-         resolve(result.items);
-         this.saveRepository(url, result.items)
-       })
-       .catch(error => {
-         reject(error)
-       })
-   }
-   })
- }
+    })
+  }
   saveRepository(url, items, callBack) {
   if(!url|| !items) return;
   let wrapData = {items: items, update_date: new Date().getTime()};
