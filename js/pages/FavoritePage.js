@@ -84,6 +84,7 @@ class FavoriteTab extends Component {
        isLoading: false,
        dataSource: this.getDataSource(resultData),
      });
+     console.log('data', this.state.dataSource)
    }).catch((e)=> {
      this.setState({
        isLoading: false,

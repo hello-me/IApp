@@ -48,7 +48,7 @@ export default class RepositoryCell extends Component{
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <Text>Author:</Text>
       <Image style={{height: 22, width:22}}
-      source={{uri: this.props.data.owner.avatar_url}}
+    /* source={{uri: this.props.data.owner.avatar_url}}*/
       />
       </View>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>

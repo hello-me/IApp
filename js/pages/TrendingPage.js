@@ -155,7 +155,7 @@ class TrendingTab extends Component {
           dataSource:this.state.dataSource.cloneWithRows(items),
           isLoading: false,
         });
-        if (result&&result.update_date&&!this.dataRespository.checkData(result.update_date)) {
+        if (result&&result.update_date&&!Utils.checkDate(result.update_date)) {
           DeviceEventEmitter.emit('showToast', '数据已过时')
           return this.dataRespository.fetchNetRepository(url);
         } else {
