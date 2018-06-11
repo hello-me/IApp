@@ -19,6 +19,7 @@ import RepositoryCell from '../common/RepositoryCell'
 import LanguageDao, {FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
 import RepositoryDetail from './RepositoryDetail'
 import FavoriteDao from '../expand/dao/FavoriteDao'
+import ProjectModel from '../model/ProjectModel'
 import Utils from '../util/Utils'
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR='&sort=stars'
@@ -56,7 +57,7 @@ super(props)
     >
       {this.state.languages.map((result,i, arr)=> {
         let lan=arr[i];
-        return lan.checked ? <PopularTab key={i} tabLabel={lan.name} {...this.props}></PopularTab>: null
+        return lan.checked ? <PopularTab key={i} tabLabel={lan.name} {...this.props}/>: null
       })}
     </ScrollableTabView>: null;
     return <View style={styles.container}>
@@ -110,6 +111,7 @@ class PopularTab extends Component {
   datasource: this.getDataSource(projectModels)
   });
  }
+ /*获取本地用户收藏的ProjectItem*/
  getFavoriteKeys() {
  favoriteDao.getFavoriteKeys()
    .then(keys => {
@@ -120,6 +122,7 @@ class PopularTab extends Component {
    })
    .catch(e=> {
    this.flushFavoriteState()
+   console.log(e)
    })
  }
  updateState(dic) {
@@ -140,7 +143,7 @@ class PopularTab extends Component {
          dataSource:this.state.dataSource.cloneWithRows(items),
          isLoading: false,
        });
-       if (result&&result.update_date&&!Utils.checkDate(result.update_date)) {
+       if (result && result.update_date && !Utils.checkDate(result.update_date)) {
          DeviceEventEmitter.emit('showToast', '数据已过时')
        return this.dataRespository.fetchNetRepository(url);
        } else {
@@ -163,7 +166,7 @@ class PopularTab extends Component {
        })
  }
   getDataSource(items) {
-  return this.state.dataSource.clonewithRows(items)
+  return this.state.dataSource.cloneWithRows(items)
   }
   genFetchUrl(key) {
    return URL + key + QUERY_STR;
@@ -178,11 +181,12 @@ class PopularTab extends Component {
     }
    })
   }
-  onFavorite(item, isFavorite) {
-   if (isFavorite) {
-   favoriteDao.saveFavoriteItem(item.toString(), JSON.stringify(item))
+  onFavorite(data, idFavorite) {
+  console.log(data)
+   if (idFavorite) {
+   favoriteDao.saveFavoriteItem(data.id, JSON.stringify(data))
    } else {
-   favoriteDao.removeFavoriteItem(item.id.toString())
+   favoriteDao.removeFavoriteItem(data.id)
    }
   }
   renderRow(data){
@@ -190,7 +194,7 @@ class PopularTab extends Component {
   onSelect={() => this.onSelect(data)}
   data={data}
   key={data.id}
-  onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
+  onFavorite={(idFavorite) => this.onFavorite(data, idFavorite)}
  />
  }
  render() {

@@ -15,20 +15,23 @@ import {
   findNodeHandle,
   NativeModules
 } from 'react-native'
-import DataRepository from '../expand/dao/DataRepository'
 import NavigationBar from '../common/NavigationBar'
 import ScrollableTabView, {ScrollableTabBar} from 'react-native-scrollable-tab-view'
 import TrendingCell from '../common/TrendingCell'
 import LanguageDao, {FLAG_LANGUAGE} from '../expand/dao/LanguageDao'
+import DataRepository, {FLAG_STORAGE} from '../expand/dao/DataRepository'
 import RepositoryDetail from './RepositoryDetail'
+import FavoriteDao from "../expand/dao/FavoriteDao"
 import TimeSpan from '../model/TimeSpan'
 import PopoverTooltip from 'react-native-popover-tooltip'
 const API_URL = 'https://api.github.com/search/repositories?q=';
+import ActionUtils from '../util/ActionUtils'
  var timeSpanTextArray =[
   new TimeSpan('今天', 'since=daily')
   ,new TimeSpan('本周', 'since=weekly')
   ,new TimeSpan('本月', 'since=monthly')
  ]
+var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_trending)
 export default class TrendingPage extends Component {
   constructor(props) {
     super(props)
@@ -193,6 +196,7 @@ class TrendingTab extends Component {
       onSelect={() => this.onSelect(data)}
       data={data}
       key={data.id}
+      onFavorite={(item, isFavorite) => ActionUtils.onFavorite(favoriteDao, item, isFavorte, FLAG_STORAGE.flag_trending)}
     />
   }
   render() {

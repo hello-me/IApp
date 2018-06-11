@@ -15,8 +15,8 @@ export default class RepositoryCell extends Component{
   constructor(props) {
   super(props);
   this.state = {　/**/
-  isFavorite: false,
-  favoriteIcon: require('../../res/images/ic_unstar_transparent.png')
+    isFavorite: this.props.data.isFavorite,
+    favoriteIcon: this.props.data.isFavorite === true ? require('../../res/images/ic_star.png') : require('../../res/images/ic_unstar_transparent.png'),
   }
   }
   setFavoriteState(isFavorite) {
@@ -27,6 +27,7 @@ export default class RepositoryCell extends Component{
   }
   onPressFavorite() {
   this.setFavoriteState(!this.state.isFavorite);
+  this.props.onFavorite(this.props.data.item , !this.state.isFavorite)
   }
   render() {
     let favoriteButton = <TouchableOpacity
@@ -48,7 +49,7 @@ export default class RepositoryCell extends Component{
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <Text>Author:</Text>
       <Image style={{height: 22, width:22}}
-    /* source={{uri: this.props.data.owner.avatar_url}}*/
+     source={{uri: this.props.data.owner.avatar_url}}
       />
       </View>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
