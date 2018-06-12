@@ -28,8 +28,6 @@ super(props)
  this.state = {
  }
 }
- componentDidMount() {
- }
   render() {
   let content =
     <ScrollableTabView
@@ -56,6 +54,7 @@ super(props)
 class FavoriteTab extends Component {
  constructor(props) {
   super(props);
+   this.unFavoriteItems = []
    this.favoriteDao = new FavoriteDao(this.props.flag);
   this.state = {
    result: '',
@@ -67,11 +66,15 @@ class FavoriteTab extends Component {
  componentDidMount() {
  this.loadData()
  }
+ componentWillReceiveProps(nextProps) {
+  this.loadData(false)
+ }
  updateState(dic) {
   if(!this) return;
   this.setState(dic)
  }
- loadData() {
+ loadData(isShowLoading) {
+ if (isShowLoading)
  this.updateState({
  isLoading: true
  })
@@ -84,38 +87,40 @@ class FavoriteTab extends Component {
        isLoading: false,
        dataSource: this.getDataSource(resultData),
      });
-   }).catch((e)=> {
+     console.log(this.state.dataSource)
+   }).catch((error)=> {
      this.setState({
        isLoading: false,
      });
-     console.log(e)
    });
-
  }
   getDataSource(items) {
   return this.state.dataSource.cloneWithRows(items)
   }
-  onSelect(item) {
+  onSelect(data) {
    this.props.navigator.push({
     component: RepositoryDetail,
     params: {
-        data: item,
+        data: data,
         flag: FLAG_STORAGE.flag_popular,
       ...this.props
     }
    })
   }
   onFavorite(item, isFavorite) {
-   if (isFavorite) {
-   favoriteDao.saveFavoriteItem(item.toString(), JSON.stringify(item))
-   } else {
-   favoriteDao.removeFavoriteItem(item.id.toString())
-   }
+    ArrayUtils.updateArray(this.unFavoriteItems, item);
+    if (this.unFavoriteItems.length > 0) {
+      if (this.props.flag === FLAG_STORAGE.flag_popular) {
+        DeviceEventEmitter.emit('favoriteChanged_popular');
+      } else {
+        DeviceEventEmitter.emit('favoriteChanged_trending');
+      }
+    }
   }
   renderRow(data){
 let CellComponent = this.props.flag === FLAG_STORAGE.flag_popular ? RepositoryCell : TrendingCell
  return <CellComponent
-  onSelect={() => this.onSelect(data)}
+onSelect={() => this.onSelect(data)}
   data={data}
   key={this.props.flag === FLAG_STORAGE.flag_popular ? data.id : data.fullName}
   onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}

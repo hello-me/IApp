@@ -126,7 +126,9 @@ export default class TrendingPage extends Component {
 class TrendingTab extends Component {
   constructor(props) {
     super(props);
-    this.dataRespository = new DataRepository();
+    this.isFavoriteChanged = false
+    this.items = []
+    this.dataRespository = new DataRepository(FLAG_STORAGE.flag_trending);
     this.state = {
       result: '',
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2)=>r1 !== r2}),
@@ -134,49 +136,90 @@ class TrendingTab extends Component {
     }
   }//
   componentDidMount() {
+  this.listener = DeviceEventEmitter.addListener('favoriteChanged_trending', () => {
+  this.isFavoriteChanged = true
+  })
   this.loadData(this.props.timeSpan, true);
+  }
+  componentWillUnmount() {
+   if (this.listener) {
+   this.listener.remove()
+   }
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.timeSpan !== this.props.timeSpan) {
       this.loadData(nextProps.timeSpan)
+    } else if (this.isFavoriteChanged) {
+    this.getFavoriteKeys();
+    } else {
+      this.flushFavoriteState();
     }
+  }
+  flushFavoriteState() {
+  let projectModels = [];
+  let items = this.items;
+  for (var i = 0, len = items.length; i < len; i++) {
+    projectModels.push(new ProjectModel(items[i], Utils.checkFavorite(items[i], this.state.favoriteKeys)));
+  }
+  this.updateState({
+    isLoading: false,
+    isLoadingFail: false,
+    dataSource: this.getDataSource(projectModels),
+  });
+}
+  getFavoriteKeys() {
+    favoriteDao.getFavoriteKeys().then((keys)=> {
+      if (keys) {
+        this.updateState({favoriteKeys: keys});
+      }
+      this.flushFavoriteState();
+    }).catch((error)=> {
+      this.flushFavoriteState();
+      console.log(error);
+    });
   }
   onRefresh() {
   this.loadData(this.props.timeSpan, true)
   }
+  getDataSource(items) {
+    return this.state.dataSource.cloneWithRows(items);
+  }
+  updateState(dic) {
+    if (!this)return;
+    this.setState(dic);
+  }
   loadData(timeSpan, isRefresh) {
-    this.setState({
-      isLoading:true
+    this.updateState({
+      isLoading: true
     })
-    let url=this.genFetchUrl(timeSpan, this.props.tabLabel);
-    console.log(url)
+    let url = this.genFetchUrl(timeSpan, this.props.tabLabel);
     this.dataRespository
       .fetchRepository(url)
       .then(result=> {
-        let items=result && result.items ? result.items : result ? result : [];
+        this.items = result && result.items ? result.items : result ? result : [];
+        this.getFavoriteKeys();
         this.setState({
-          dataSource:this.state.dataSource.cloneWithRows(items),
+          dataSource:this.state.dataSource.cloneWithRows(this.items),
           isLoading: false,
         });
-        if (result&&result.update_date&&!Utils.checkDate(result.update_date)) {
-          DeviceEventEmitter.emit('showToast', '数据已过时')
+        if (!this.items || isRefresh && result && result.update_date && !Utils.checkDate(result.update_date)) {
           return this.dataRespository.fetchNetRepository(url);
-        } else {
-          DeviceEventEmitter.emit('showToast', '显示缓存数据')
         }
       })
-      .then(items=> {
-        if(!items || items.length === 0) return;
+      .then((items)=> {
+        if (!items || items.length === 0)return;
+        this.items = items;
+        this.getFavoriteKeys();
         this.setState({
-          dataSource:this.state.dataSource.cloneWithRows(items)
-        })
-        DeviceEventEmitter.emit('showToast', '显示网络数据')
+          dataSource:this.state.dataSource.cloneWithRows(this.items),
+          isLoading: false,
+        });
       })
       .catch(error=> {
         console.log(error);
-        this.setState({
+        this.updateState({
           isLoading: false
-        })
+        });
       })
   }
   genFetchUrl(timeSpan, category) {

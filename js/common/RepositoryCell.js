@@ -30,6 +30,8 @@ export default class RepositoryCell extends Component{
   this.props.onFavorite(this.props.data.item , !this.state.isFavorite)
   }
   render() {
+    let AuthorImage = this.props.data.owner ?  <Image style={{height: 22, width:22}} source={{uri:this.props.data.owner.avatar_url}}
+    /> : <Image style={{height: 22, width:22}} source={require('../../res/images/wanzi.png')}/>
     let favoriteButton = <TouchableOpacity
     onPress={() =>this.onPressFavorite()}
     >
@@ -48,9 +50,7 @@ export default class RepositoryCell extends Component{
     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <Text>Author:</Text>
-      <Image style={{height: 22, width:22}}
-     source={{uri: this.props.data.owner.avatar_url}}
-      />
+        {AuthorImage}
       </View>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
        <Text>Start:</Text>
