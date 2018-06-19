@@ -22,16 +22,19 @@ import WebViewPage from '../../pages/WebViewPage'
 import GlobalStyles from '../../../res/styles/GlobalStyles'
 import ViewUtils from '../../util/ViewUtils'
 import config from '../../../res/data/config.json'
+import RepositoryUtils from '../../expand/dao/RepositoryUtils'
 export default class AboutPage extends Component {
   constructor(props) {
     super(props);
     this.aboutCommon=new AboutCommon(props,(dic)=>this.updateState(dic),FLAG_ABOUT.flag_about,config);
+    this.repositoryUtils = new RepositoryUtils(this)
     this.state = {
      projectModels: [],
      author: config.author
     }
   }
   componentDidMount() {
+    this.aboutCommon.componentDidMount();
   }
   componentWillUnmount() {
   }
@@ -42,7 +45,7 @@ export default class AboutPage extends Component {
   let TargetComponent, params = {...this.props,menuType:tab};
   switch (tab) {
     case MORE_MENU.About_Author:
-       console.log('1')
+       console.log('About_Author')
        break;
     case MORE_MENU.Website:
       TargetComponent = WebViewPage;

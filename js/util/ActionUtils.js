@@ -14,8 +14,8 @@ export default class ActionUtils {
       },
     });
   }
-  static onFavorite(favoriteDao,item, isFavorite) {
-    var key=flag===FLAG_STORAGE.flag_trending? item.fullName: item.toString();
+  static onFavorite(favoriteDao,item, isFavorite, flag) {
+    var key= flag===FLAG_STORAGE.flag_trending? item.fullName: item.toString();
     if (isFavorite) {
       favoriteDao.saveFavoriteItem(key, JSON.stringify(item));
     } else {

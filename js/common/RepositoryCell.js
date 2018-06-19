@@ -30,7 +30,8 @@ export default class RepositoryCell extends Component{
   this.props.onFavorite(this.props.data.item , !this.state.isFavorite)
   }
   render() {
-    let AuthorImage = this.props.data.owner ?  <Image style={{height: 22, width:22}} source={{uri:this.props.data.owner.avatar_url}}
+    let item = this.props.data.item? this.props.data.item:this.props.data;
+    let AuthorImage = item.owner ?  <Image style={{height: 22, width:22}} source={{uri:item.owner.avatar_url}}
     /> : <Image style={{height: 22, width:22}} source={require('../../res/images/wanzi.png')}/>
     let favoriteButton = <TouchableOpacity
     onPress={() =>this.onPressFavorite()}
@@ -45,8 +46,8 @@ export default class RepositoryCell extends Component{
   style={styles.container}
   >
   <View style={styles.cell_container}>
-    <Text style={styles.title}>{this.props.data.full_name}</Text>
-    <Text style={styles.description}>{this.props.data.description}</Text>
+    <Text style={styles.title}>{item.full_name}</Text>
+    <Text style={styles.description}>{item.description}</Text>
     <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
       <Text>Author:</Text>
@@ -54,7 +55,7 @@ export default class RepositoryCell extends Component{
       </View>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
        <Text>Start:</Text>
-        <Text>{this.props.data.stargazers_count}</Text>
+        <Text>{item.stargazers_count}</Text>
       </View>
       {favoriteButton}
     </View>
@@ -64,7 +65,6 @@ export default class RepositoryCell extends Component{
 }
 const styles=StyleSheet.create({
   container: {
-  flex:1
  },
    tilte: {
    fontSize:16,

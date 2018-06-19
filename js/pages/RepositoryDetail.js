@@ -20,10 +20,11 @@ const TRENDING_URL = 'https://github.com/'
 export default class RepositoryDetail extends Component {
   constructor(props) {
     super(props);
-    this.url = this.props.data.html_url ? this.props.data.html_url
-      : TRENDING_URL + this.props.data.fullName;
-    var title = this.props.data.full_name ? this.props.data.full_name
-      : this.props.data.fullName;
+    var item = this.props.data.item? this.props.data.item:this.props.data
+    this.url = item.html_url ? item.html_url
+      : TRENDING_URL + item.fullName;
+    var title = item.full_name ?item.full_name
+      : item.fullName;
     this.favoriteDao = new FavoriteDao(this.props.flag)
     this.state = {
      url: this.url,
@@ -60,7 +61,7 @@ onBack() {
   onRightButtonClick() {
    var projectModel = this.props.data;
    this.setFavoriteState(projectModel.isFavorite = !projectModel.isFavorite);
-   var key = projectModel.fullName ? projectModel.fullName : projectModel.id.toString();
+   var key = projectModel.fullName ? projectModel.fullName : projectModel.full_name;
    if (projectModel.isFavorite) {
      this.favoriteDao.saveFavoriteItem(key, JSON.stringify(projectModel));
    } else {

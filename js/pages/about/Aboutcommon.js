@@ -13,17 +13,66 @@ import {
 } from 'react-native'
 import ActionUtils from '../../util/ActionUtils'
 import {FLAG_STORAGE} from '../../expand/dao/DataRepository'
+import RepositoryCell from '../../common/RepositoryCell'
 import FavoriteDao from '../../expand/dao/FavoriteDao'
 import ParallaxScrollView from 'react-native-parallax-scroll-view'
 import GlobalStyles from '../../../res/styles/GlobalStyles'
 import Utils from '../../util/Utils'
+import RepositoryUtils from '../../expand/dao/RepositoryUtils'
 import ViewUtils from '../../util/ViewUtils'
 export var FLAG_ABOUT = {flag_about: 'about', flag_about_me: 'about_me'}
-export default class Aboutcommon{
- constructor(props, updateState, flag_about, config) {
+export default class AboutCommon{
+  constructor(props, updateState, flag_about, config) {
    this.props = props;
+   this.updateState = updateState;
+   this.flag_about = flag_about;
+   this.config = config;
+   this.repositories = [];
+   this.favoriteKeys = null;
    this.favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
+   this.repositoryUtils = new RepositoryUtils(this)
  }
+ componentDidMount() {
+  if (this.flag_about === FLAG_ABOUT.flag_about) {
+    this.repositoryUtils.fetchRepository(this.config.info.currentRepoUrl);
+  } else {
+  var urls = [];
+  var items = this.config.items;
+  for (let i = 0, l = items.length; i< l; i++) {
+   urls.push(this.config.info.url+items[i]);
+  }
+  this.repositoryUtils.fetchRepositories(urls);
+  }
+ }
+ /**
+ * 通知数据发生改变
+ * */
+  onNotifyDataChanged(items) {
+  this.updateFavorite(items);
+  }
+  /**
+  * 更新项目的用户收藏状态
+  * */
+  async updateFavorite(repositories) {
+    if (repositories)this.repositories = repositories;
+    if (!this.repositories)return;
+    if(!this.favoriteKeys){
+      this.favoriteKeys = await this.favoriteDao.getFavoriteKeys();
+    }
+    let projectModels = [];
+    for (let i = 0, l = this.repositories.length; i < l; i++) {
+      var data=this.repositories[i];
+      var item=data.item?data.item:data;
+      projectModels.push({
+        isFavorite: Utils.checkFavorite(item, this.favoriteKeys?this.favoriteKeys:[]),
+        item: item,
+      })
+    }
+    this.updateState({
+      projectModels: projectModels,
+    })
+  }
+
   /**
    * 创建项目视图
    * @param projectModels
@@ -38,11 +87,11 @@ export default class Aboutcommon{
         <RepositoryCell
           key={projectModel.item.id}
           onSelect={()=>ActionUtils.onSelectRepository({
-            projectModel:projectModel,
-            ...this.props,
-            flag:FLAG_STORAGE.flag_popular
+            data: projectModel,
+            flag: FLAG_STORAGE.flag_popular,
+            ...this.props
           })}
-          projectModel={projectModel}
+          data={projectModel}
           onFavorite={(item, isFavorite)=>ActionUtils.onFavorite(this.favoriteDao,item, isFavorite,FLAG_STORAGE.flag_popular)}/>
       );
     }
