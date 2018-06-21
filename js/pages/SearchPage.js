@@ -67,9 +67,9 @@ export default class SearchPage extends Component {
      rightButtonText:'搜索'
    });
  }
- getDataSource(items) {
- return this.state.dataSource.cloneWithRows(items);
- }
+  getDataSource(items) {
+    return this.state.dataSource.cloneWithRows(items);
+  }
  /**
  * 获取本地用户收藏的ProjectItem
  * */
@@ -89,19 +89,19 @@ export default class SearchPage extends Component {
    this.cancelable=makeCancelable(fetch(this.genFetchUrl(this.inputKeky)));
    this.cancelable.promise
      .then(response=>response.json())
-     .then(responseData => {
-      if(!this || responseData || !responseData.items || responseData.items.length === 0) {
+     .then(responseData=>{
+      if(!responseData || !responseData.items || responseData.items.length === 0) {
       this.toast.show(this.inputKeky + '什么也没找到', DURATION.LENGTH_LONG);
       this.updateState({isLoading: false, rightButtonText: '搜索'})
       return;
       }
-      this.items = responseData.items;
-      this.getFavoriteKeys();
+       this.items=responseData.items;
+       this.getFavoriteKeys();
      }).catch(e => {
      this.updateState({
      isLoading:false,
      rightButtonText: '搜索'
-     })
+       })
      })
  }
  genFetchUrl(key) {
@@ -180,13 +180,13 @@ export default class SearchPage extends Component {
    renderRow= {(e) => this.renderRow(e)}
   /> : null;
   let indicatorView = this.state.isLoading ?
-  <ActivityIndicator
+  <ActivityIndicator {/*进度条*/}
   style={styles.centering}
   size="large"
   animating={this.state.isLoading}
   /> : null;
   let resultView=<View style={{flex:1}}>
-    {indicatorView}
+    {indicatorView} {/*处于同一个布局下*/}
     {listView}
   </View>
     return <View style={GlobalStyles.root_container}>
