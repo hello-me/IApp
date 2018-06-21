@@ -9,8 +9,10 @@ import {
   Navigator,
   TextInput,
   ListView,
+  TouchableOpacity,
   RefreshControl,
-  DeviceEventEmitter
+  DeviceEventEmitter,
+  Image
 } from 'react-native'
 import DataRepository, {FLAG_STORAGE} from '../expand/dao/DataRepository'
 import NavigationBar from '../common/NavigationBar'
@@ -21,6 +23,7 @@ import RepositoryDetail from './RepositoryDetail'
 import FavoriteDao from '../expand/dao/FavoriteDao'
 import ProjectModel from '../model/ProjectModel'
 import Utils from '../util/Utils'
+import SearchPage from './SearchPage'
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR='&sort=stars'
 var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
@@ -46,6 +49,27 @@ super(props)
      console.log(error)
      })
  }
+  renderRightButton() {
+   return <View style={{flexDirection: 'row'}}>
+   <TouchableOpacity
+   onPress={()=> {
+   this.props.navigator.push({
+     component:SearchPage,
+     params:{
+       ...this.props
+     }
+   })
+   }}
+   >
+     <View style={{padding:5,marginRight:8}}>
+       <Image
+         style={{width:24,height:24}}
+         source={require('../../res/images/ic_search_white_48pt.png')}
+       />
+     </View>
+   </TouchableOpacity>
+   </View>
+  }
   render() {
   let content = this.state.languages.length > 0 ?
     <ScrollableTabView
@@ -66,6 +90,7 @@ super(props)
         statusBar={{ //状态栏
         backgroundColor:'#2196F3'
         }}
+        rightButton={this.renderRightButton()}
       />
       {content}
     </View>

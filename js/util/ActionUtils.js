@@ -5,6 +5,9 @@ import RepositoryDetail from '../pages/RepositoryDetail'
 import DataRepository, {FLAG_STORAGE} from '../expand/dao/DataRepository'
 
 export default class ActionUtils {
+/**
+* 跳转到详情页
+* */
   static onSelectRepository(params) {
     var {navigator}=params;
     navigator.push({

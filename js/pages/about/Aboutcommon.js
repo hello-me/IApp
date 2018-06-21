@@ -44,6 +44,8 @@ export default class AboutCommon{
   this.repositoryUtils.fetchRepositories(urls);
   }
  }
+ componentWillUnmount(){
+ }
  /**
  * 通知数据发生改变
  * */

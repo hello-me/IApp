@@ -23,6 +23,7 @@ import GlobalStyles from '../../../res/styles/GlobalStyles'
 import ViewUtils from '../../util/ViewUtils'
 import config from '../../../res/data/config.json'
 import RepositoryUtils from '../../expand/dao/RepositoryUtils'
+import AboutMePage from './AboutMePage'
 export default class AboutPage extends Component {
   constructor(props) {
     super(props);
@@ -37,6 +38,7 @@ export default class AboutPage extends Component {
     this.aboutCommon.componentDidMount();
   }
   componentWillUnmount() {
+    this.aboutCommon.componentWillUnmount()
   }
   updateState(dic) {
   this.setState(dic)
@@ -45,7 +47,7 @@ export default class AboutPage extends Component {
   let TargetComponent, params = {...this.props,menuType:tab};
   switch (tab) {
     case MORE_MENU.About_Author:
-       console.log('About_Author')
+      TargetComponent = AboutMePage
        break;
     case MORE_MENU.Website:
       TargetComponent = WebViewPage;
