@@ -3,17 +3,17 @@
  */
 
 export default function makeCancelable(promise) {
-  let hasCanceled_=false;
+  let hasCanceled_=false; /*标志*/
   const wrappedPromise=new Promise((resolve,reject)=>{
     promise.then((val)=>{
-      hasCanceled_?reject({isCanceled:true}):resolve(val)
+      hasCanceled_?reject({isCanceled:true}):resolve(val)/*获取数据*/
     });
     promise.catch((error)=>{
       hasCanceled_?reject({isCanceled:true}):resolve(error)
     })
   });
   return {
-    promise:wrappedPromise,
+    promise:wrappedPromise, /*封装的promise*/
     cancel(){
       hasCanceled_=true;
     }

@@ -17,11 +17,21 @@ import ViewUtils from '../../util/ViewUtils'
 import CustomKeyPage from './CustomKeyPage'
 import SortKeyPage from './SortKeyPage'
 import AboutPage from '../about/AboutPage'
+import CustomThemePage from './CustomTheme'
 import {FLAG_LANGUAGE} from '../../expand/dao/LanguageDao'
 export default class myPage extends Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      customThemeViewVisible:false
+    }
+  }
+  renderCustomThemeView() {
+  return (<CustomThemePage
+  visible={this.state.customThemeViewVisible}
+  {...this.props}
+  onClose={() => this.setState({customThemeViewVisible:false})}
+  />)
   }
   onClick(tab) {
    let TargetComponent, params = {...this.props, menuType: tab};
@@ -47,6 +57,7 @@ export default class myPage extends Component {
        params.flag = FLAG_LANGUAGE.flag_key;
        break;
      case MORE_MENU.Custom_Theme:
+      this.setState({customThemeViewVisible: true})
        break;
      case MORE_MENU.About_Author:
        break;
@@ -125,7 +136,7 @@ export default class myPage extends Component {
           {this.getItem(MORE_MENU.About_Author, require('./img/ic_insert_emoticon.png'), '关于作者')}
           <View style={GlobalStyles.line}/>
         </ScrollView>
-        <View style={GlobalStyles.line}/>
+        {this.renderCustomThemeView()}
       </View>)
   }
 }

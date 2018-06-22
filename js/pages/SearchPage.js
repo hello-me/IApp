@@ -19,6 +19,7 @@ import GlobalStyles from "../../res/styles/GlobalStyles";
 import RepositoryCell from '../common/RepositoryCell';
 import LanguageDao,{FLAG_LANGUAGE} from '../expand/dao/LanguageDao';
 import ActionUtils from '../util/ActionUtils';
+import {ACTION_HOME, FLAG_TAB} from './HomePage';
 import Utils from '../util/Utils'
 import FavoriteDao from '../expand/dao/FavoriteDao'
 import makeCancelable from '../util/Cancleable'
@@ -43,14 +44,47 @@ export default class SearchPage extends Component {
     }
   }
  componentDidMount() {
-
+  this.initKeys()
  }
  componentWillUnmount() {
+  if (this.isKeyChange) {
+  DeviceEventEmitter.emit('ACTION_HOME', ACTION_HOME.A_RESTART, FLAG_TAB.flag_popularTab)
+  }
+   this.cancelable&&this.cancelable.cancel();
  }
  /**
  * 添加标签
  * */
  saveKey() {
+ let key = this.inputKeky;
+ if (this.checkKeyIsExixt(this.keys, key)) {
+ this.toast.show(key + '已经存在', DURATION.LENGTH_LONG);
+ } else {
+ key = {
+ "path": key,
+ "name": key,
+ "checked": true
+ };
+   this.keys.unshift(key);
+   this.languageDao.save(this.keys);
+   this.toast.show(key.name+'保存成功',DURATION.LENGTH_LONG);
+   this.isKeyChange=true;
+ }
+ }
+ /**
+ * 获取所有标签
+ * */
+ async initKeys(){
+   this.keys=await this.languageDao.fetch();
+ }
+ /**
+ *
+ *   */
+ checkKeyIsExixt(keys, key) {
+ for(let i=0,l=keys.length; i<l;i++){
+ if(key.toLowerCase()===keys[i].name.toLowerCase()) return true;
+ }
+ return false;
  }
  /**
  * 更新ProjectFavoriteItem的Favorite状态
@@ -86,7 +120,7 @@ export default class SearchPage extends Component {
  this.updateState({
  isLoading: true,
  })
-   this.cancelable=makeCancelable(fetch(this.genFetchUrl(this.inputKeky)));
+   this.cancelable=makeCancelable(fetch(this.genFetchUrl(this.inputKeky))); /*fetch返回的promise*/
    this.cancelable.promise
      .then(response=>response.json())
      .then(responseData=>{
@@ -97,6 +131,9 @@ export default class SearchPage extends Component {
       }
        this.items=responseData.items;
        this.getFavoriteKeys();
+       if(!this.checkKeyIsExixt(this.keys, this.inputKeky)) {
+       this.updateState({showBottomButton:true})
+       }
      }).catch(e => {
      this.updateState({
      isLoading:false,
@@ -180,19 +217,32 @@ export default class SearchPage extends Component {
    renderRow= {(e) => this.renderRow(e)}
   /> : null;
   let indicatorView = this.state.isLoading ?
-  <ActivityIndicator {/*进度条*/}
+  <ActivityIndicator
   style={styles.centering}
   size="large"
   animating={this.state.isLoading}
   /> : null;
   let resultView=<View style={{flex:1}}>
-    {indicatorView} {/*处于同一个布局下*/}
+    {indicatorView}
     {listView}
   </View>
+  let bottomButton = this.state.showBottomButton?
+    <TouchableOpacity
+    style={[styles.bottomButton, {backgroundColor: '#6495ED'}]}
+    onPress={() => {
+    this.saveKey();
+    }
+    }
+    >
+    <View style={{justifyContent: 'center'}}>
+     <Text style={styles.title}>添加标签</Text>
+    </View>
+    </TouchableOpacity>: null
     return <View style={GlobalStyles.root_container}>
       {statusBar}
       {this.renderNavBar()}
       {resultView}
+      {bottomButton}
       <Toast ref={toast=> this.toast=toast}/>
     </View>
   }
@@ -223,16 +273,21 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: '500'
     },
-    centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    opacity: 0.9,
-    height: 40,
+  centering:{
+    alignItems:'center',
+    justifyContent:'center',
+    flex:1,
+  },
+  bottomButton:{
+    alignItems:'center',
+    justifyContent:'center',
+    opacity:0.9,
+    height:40,
     position:'absolute',
     left:10,
-    top:GlobalStyles.window_height-45,
+    top:GlobalStyles.window_height-65, /*位置*/
     right:10,
     borderRadius:3
-    }
+  }
   }
 )
