@@ -22,16 +22,18 @@ import TrendingCell from '../common/TrendingCell'
 import ArrayUtils from '../util/ArrayUtils'
 import {FLAG_STORAGE} from '../expand/dao/DataRepository'
 import ProjectModel from '../model/ProjectModel'
-export default class FavoritePage extends Component {
+import BaseComponent from './BaseComponent'
+export default class FavoritePage extends BaseComponent {
 constructor(props) {
 super(props)
  this.state = {
+   theme: this.props.theme,
  }
 }
   render() {
   let content =
     <ScrollableTabView
-      tabBarBackgroundColor="#2196F3"
+      tabBarBackgroundColor={this.state.theme.themeColor}
       tabBarInctiveTextColor="mintcream"
       tabBarActiveTextColor="white"
       tabBarUnderlineStyle={{backgroundColor:'#e7e7e7', height:2}}
@@ -43,9 +45,9 @@ super(props)
     return <View style={styles.container}>
       <NavigationBar
         title={'收藏'}
-        statusBar={{ //状态栏
-        backgroundColor:'#2196F3'
-        }}
+        statusBar={
+          {backgroundColor: this.state.theme.themeColor}
+        }
       />
       {content}
     </View>
@@ -122,6 +124,7 @@ let CellComponent = this.props.flag === FLAG_STORAGE.flag_popular ? RepositoryCe
  return <CellComponent
 onSelect={() => this.onSelect(data)}
   data={data}
+ theme={this.props.theme}
   key={this.props.flag === FLAG_STORAGE.flag_popular ? data.id : data.fullName}
   onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
   isFavorite={true}
@@ -138,9 +141,9 @@ onSelect={() => this.onSelect(data)}
       title='Loading...'
       refreshing={this.state.isLoading}
       onRefresh={()=>this.loadData()}
-      colors={['#2196F3']}
-      tintColor={'#2196F3'}
-      titleColor={'#2196F3'}
+      colors={[this.props.theme.themeColor]}
+      tintColor={this.props.theme.themeColor}
+      titleColor={this.props.theme.themeColor}
       />
     }
   />

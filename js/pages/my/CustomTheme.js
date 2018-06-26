@@ -26,7 +26,7 @@ export default class CustomTheme extends Component {
   onSelectTheme(themeKey) {
   this.props.onClose()
   this.themeDao.save(ThemeFlags[themeKey])
-//  DeviceEventEmitter.emit('ACTION_BASE', ACTION_HOME.A_THEME, ThemeFactory.createTheme(ThemeFlags[themeKey]))
+ DeviceEventEmitter.emit('ACTION_BASE', ACTION_HOME.A_THEME, ThemeFactory.createTheme(ThemeFlags[themeKey]))
 
   }
   getThemeItem(themeKey) {

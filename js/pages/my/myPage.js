@@ -17,13 +17,15 @@ import ViewUtils from '../../util/ViewUtils'
 import CustomKeyPage from './CustomKeyPage'
 import SortKeyPage from './SortKeyPage'
 import AboutPage from '../about/AboutPage'
+import BaseComponent from '../BaseComponent'
 import CustomThemePage from './CustomTheme'
 import {FLAG_LANGUAGE} from '../../expand/dao/LanguageDao'
-export default class myPage extends Component {
+export default class myPage extends BaseComponent {
   constructor(props) {
     super(props);
     this.state = {
-      customThemeViewVisible:false
+      customThemeViewVisible:false,
+      theme: this.props.theme
     }
   }
   renderCustomThemeView() {
@@ -78,7 +80,7 @@ export default class myPage extends Component {
   render() {
   let navigationBar = <NavigationBar
     title="我的"
-    style={{backgroundColor: '#6495ED'}}
+    style={this.state.theme.styles.navBar}
   />
     return (
       <View style={GlobalStyles.root_container}>
@@ -90,17 +92,17 @@ export default class myPage extends Component {
         <View style={[styles.item, {height: 90}]}>
           <View style={{alignItems: 'center', flexDirection: 'row'}}>
           <Image source={require('../../../res/images/ic_trending.png')}
-          style={{width:40, height: 40, marginRight:10, tintColor: '#6495ED'}}
+          style={[{width:40, height: 40, marginRight:10},this.state.theme.styles.tabBarSelectedIcon]}
           />
           <Text>GitHub Popular</Text>
           </View>
           <Image source={require('../../../res/images/ic_tiaozhuan.png')}
-          style={{
+          style={[{
           opacity:1,
           marginRight: 10,
           height: 22,
           width: 22,
-          alignSelf: 'center'}}
+          alignSelf: 'center'},this.state.theme.styles.tabBarSelectedIcon]}
           />
         </View>
         </TouchableHighlight>

@@ -24,6 +24,7 @@ import RepositoryDetail from './RepositoryDetail'
 import FavoriteDao from "../expand/dao/FavoriteDao"
 import TimeSpan from '../model/TimeSpan'
 import PopoverTooltip from 'react-native-popover-tooltip'
+import BaseComponent from './BaseComponent'
 const API_URL = 'https://api.github.com/search/repositories?q=';
 import ActionUtils from '../util/ActionUtils'
  var timeSpanTextArray =[
@@ -32,16 +33,18 @@ import ActionUtils from '../util/ActionUtils'
   ,new TimeSpan('本月', 'since=monthly')
  ]
 var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_trending)
-export default class TrendingPage extends Component {
+export default class TrendingPage extends BaseComponent {
   constructor(props) {
     super(props)
     this.languageDao=new LanguageDao(FLAG_LANGUAGE.flag_language)
     this.state = {
       languages: [],
-      timeSpan: timeSpanTextArray[0]
+      timeSpan: timeSpanTextArray[0],
+      theme: this.props.theme
     }
   }
   componentDidMount() {
+    super.componentDidMount()
    this.loadData()
   }
   loadData() {
@@ -101,7 +104,7 @@ export default class TrendingPage extends Component {
   render() {
     let content = this.state.languages.length > 0 ?
       <ScrollableTabView
-        tabBarBackgroundColor="#2196F3"
+        tabBarBackgroundColor={this.state.theme.themeColor}
         tabBarInctiveTextColor="mintcream"
         tabBarActiveTextColor="white"
         tabBarUnderlineStyle={{backgroundColor:'#e7e7e7', height:2}}
@@ -116,8 +119,9 @@ export default class TrendingPage extends Component {
       <NavigationBar
        titleView={this.renderTitleView()}
         statusBar={{ //状态栏
-          backgroundColor:'#2196F3'
+          backgroundColor: this.state.theme.themeColor
         }}
+       style={this.state.theme.styles.navBar}
       />
       {content}
     </View>
@@ -133,6 +137,7 @@ class TrendingTab extends Component {
       result: '',
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2)=>r1 !== r2}),
       isLoading: false,
+      theme: this.props.theme
     }
   }//
   componentDidMount() {
@@ -250,11 +255,11 @@ class TrendingTab extends Component {
         refreshControl={
           <RefreshControl
             title='Loading...'
+            titleColor={this.props.theme.themeColor}
+            colors={[this.props.theme.themeColor]}
             refreshing={this.state.isLoading}
             onRefresh={()=>this.onRefresh()}
-            colors={['#2196F3']}
-            tintColor={'#2196F3'}
-            titleColor={'#2196F3'}
+            tintColor={this.props.theme.themeColor}
           />
         }
       />

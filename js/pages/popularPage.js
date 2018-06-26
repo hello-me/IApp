@@ -24,10 +24,11 @@ import FavoriteDao from '../expand/dao/FavoriteDao'
 import ProjectModel from '../model/ProjectModel'
 import Utils from '../util/Utils'
 import SearchPage from './SearchPage'
+import BaseComponent from './BaseComponent'
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR='&sort=stars'
 var favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular);
-export default class PopularPage extends Component {
+export default class PopularPage extends BaseComponent {
 constructor(props) {
 super(props)
   this.languageDao=new LanguageDao(FLAG_LANGUAGE.flag_key)
@@ -37,6 +38,7 @@ super(props)
   }
 }
  componentDidMount() {
+ super.componentDidMount()
  this.loadData()
  }
  loadData() {
@@ -113,26 +115,28 @@ class PopularTab extends Component {
     favoriteKeys: [],
     theme: this.props.theme
   }
- }//
- componentDidMount() {
-this.listener = DeviceEventEmitter.addListener('favoriteChanged_popular', () => {
-this.isFavoriteChanged = true;
-})
-   this.loadData(this.props.timeSpan);
  }
- componentWillUnmount() {
-    if (this.listener) {
-     this.listener.remove();
-    }
- }
-componentWillReceiveProps(nextProps) {
-  if (this.isFavoriteChanged) {
-  this.isFavoriteChanged = false;
-  this.getFavoriteKeys();
-  } else {
-    this.flushFavoriteState();
+  componentDidMount() {
+    this.listener = DeviceEventEmitter.addListener('favoriteChanged_popular', () => {
+      this.isFavoriteChanged = true;
+    });
+    this.loadData();
   }
-}
+
+  componentWillUnmount() {
+    if (this.listener) {
+      this.listener.remove();
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    if (this.isFavoriteChanged) {
+      this.isFavoriteChanged = false;
+      this.getFavoriteKeys();
+    }else if(nextProps.theme!==this.state.theme){/*判断主题*/
+      this.updateState({theme:nextProps.theme})
+      this.loadData();
+    }
+  }
  /*更新ProjectItem 的状态*/
  flushFavoriteState() {
   let projectModels = []

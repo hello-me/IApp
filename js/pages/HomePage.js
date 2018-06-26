@@ -17,14 +17,15 @@ import TrendingPage from './TrendingPage'
 import FavriteDao from './FavoritePage'
 import MyPage from './my/myPage'
 import Toast,{DURATION} from 'react-native-easy-toast'
-export const ACTION_HOME={A_SHOW_TOAST: 'showToast', A_RESTART: 'restatrt'}
+import BaseComponent from './BaseComponent'
+export const ACTION_HOME={A_SHOW_TOAST: 'showToast', A_RESTART: 'restatrt',A_THEME:'theme'}
 export const FLAG_TAB={
   flag_popularTab:'tb_popular',
   flag_trendingTab:'tb_trending',
   flag_favoriteTab:'tb_favorite',
   flag_my:'tb_my'
 }
-export default class HomePage extends Component<Props> {
+export default class HomePage extends BaseComponent {
   constructor(props){
     super(props);
     let selectedTab=this.props.selectedTab?this.props.selectedTab:'tb_popular';
@@ -34,6 +35,7 @@ export default class HomePage extends Component<Props> {
     }
   }
   componentDidMount() {
+  super.componentDidMount()
   this.listener=DeviceEventEmitter.addListener('ACTION_HOME',
    (action, params) =>
     this.onAction(action, params));
@@ -60,6 +62,7 @@ export default class HomePage extends Component<Props> {
     })
   }
   componentWillUnmount() {
+  super.componentWillUnmount()
   this.listener&&this.listener.remove();
   }
   _renderTab(Component, selectTab, title, renderIcon) {
