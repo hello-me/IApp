@@ -3,27 +3,30 @@
  */
 import React, {Component} from 'react';
 import {
-  View,
-  StyleSheet,
-  Text,
   AsyncStorage,
-  TextInput
 } from 'react-native'
-export default class ThemeDao extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {}
-  }
+import ThemeFactory, {ThemeFlags} from '../../../res/styles/ThemeFactory'
+const THEME_KEY = 'theme_key'
 
-  render() {
-    return (
-      <View style={styles.container}></View>
-    )
-  }
+export default class ThemeDao {
+ /*获取当前主题*/
+ getTheme() {
+ return new Promise((resolve, reject) => {
+   AsyncStorage.getItem(THEME_KEY, (error, result) => {
+   if (error) {
+   reject(error);
+   return;
+   }
+   if (!result) {
+   this.save(ThemeFlags.Default);
+     result = ThemeFlags.Default;
+   }
+   resolve(ThemeFactory.createTheme(result))
+   })
+ })
+ }
+ /*保存主题*/
+ save(themeFlag) {
+  AsyncStorage.setItem(THEME_KEY, themeFlag, (error=> {}))
+ }
 }
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    }
-  }
-)

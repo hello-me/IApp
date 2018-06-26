@@ -31,8 +31,6 @@ export const ThemeFlags = {
 export default class ThemeFactory{
     /**
      * 创建一个主题样式
-     * @param themeFlag 主题标识
-     * @returns {{themeColor: *, styles: *}}
      */
     static createTheme(themeFlag){
         return {

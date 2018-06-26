@@ -29,7 +29,8 @@ export default class HomePage extends Component<Props> {
     super(props);
     let selectedTab=this.props.selectedTab?this.props.selectedTab:'tb_popular';
     this.state={
-      selectedTab: selectedTab
+      selectedTab: selectedTab,
+      theme: this.props.theme
     }
   }
   componentDidMount() {
@@ -64,13 +65,13 @@ export default class HomePage extends Component<Props> {
   _renderTab(Component, selectTab, title, renderIcon) {
    return <TabNavigator.Item
      selected={this.state.selectedTab === selectTab}
-     selectedTitleStyle= {{color: '#2196F3'}}
+     selectedTitleStyle= {this.state.theme.styles.selectedTitleStyle}
      tilte={title}
      renderIcon={() => <Image style={styles.image} source={renderIcon} />}
-     renderSelectedIcon={() => <Image style={[styles.image, {tintColor: '#2196F3'}]} source={renderIcon}/>}
+     renderSelectedIcon={() => <Image style={[styles.image, this.state.theme.styles.tabBarSelectedIcon]} source={renderIcon}/>}
      onPress={() => this.setState({selectedTab: selectTab})}
    >
-     <Component {...this.props}/>
+     <Component {...this.props} theme={this.state.theme}/>
    </TabNavigator.Item>
   }
   render() {

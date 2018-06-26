@@ -32,7 +32,8 @@ constructor(props) {
 super(props)
   this.languageDao=new LanguageDao(FLAG_LANGUAGE.flag_key)
   this.state = {
-  languages: []
+  languages: [],
+  theme: this.props.theme
   }
 }
  componentDidMount() {
@@ -73,10 +74,10 @@ super(props)
   render() {
   let content = this.state.languages.length > 0 ?
     <ScrollableTabView
-      tabBarBackgroundColor="#2196F3"
+      tabBarBackgroundColor={this.state.theme.themeColor}
       tabBarInctiveTextColor="mintcream"
       tabBarActiveTextColor="white"
-      tabBarUnderlineStyle={{backgroundColor:'#e7e7e7', height:2}}
+      tabBarUnderlineStyle={{backgroundColor: '#e7e7e7', height: 2}}
       renderTabBar={() => <ScrollableTabBar/>}
     >
       {this.state.languages.map((result,i, arr)=> {
@@ -84,12 +85,15 @@ super(props)
         return lan.checked ? <PopularTab key={i} tabLabel={lan.name} {...this.props}/>: null
       })}
     </ScrollableTabView>: null;
+    var statusBar = {
+    backgroundColor: this.state.theme.themeColor,
+    barStyle: 'light-content'
+    }
     return <View style={styles.container}>
       <NavigationBar
         title={'最热'}
-        statusBar={{ //状态栏
-        backgroundColor:'#2196F3'
-        }}
+        statusBar={statusBar}
+        style={this.state.theme.styles.navBar}
         rightButton={this.renderRightButton()}
       />
       {content}
@@ -106,7 +110,8 @@ class PopularTab extends Component {
    result: '',
     dataSource: new ListView.DataSource({rowHasChanged: (r1, r2)=>r1 !== r2}),
     isLoading: false,
-    favoriteKeys: []
+    favoriteKeys: [],
+    theme: this.props.theme
   }
  }//
  componentDidMount() {
@@ -222,6 +227,7 @@ componentWillReceiveProps(nextProps) {
  return <RepositoryCell
   onSelect={() => this.onSelect(data)}
   data={data}
+  theme={this.props.theme}
   key={data.id}
   onFavorite={(item, isFavorite) => this.onFavorite(item, isFavorite)}
  />
@@ -236,9 +242,9 @@ componentWillReceiveProps(nextProps) {
       title='Loading...'
       refreshing={this.state.isLoading}
       onRefresh={()=>this.loadData()}
-      colors={['#2196F3']}
-      tintColor={'#2196F3'}
-      titleColor={'#2196F3'}
+      titleColor={this.props.theme.themeColor}
+      colors={[this.props.theme.themeColor]}
+      tintColor={this.props.theme.themeColor}
       />
     }
   />

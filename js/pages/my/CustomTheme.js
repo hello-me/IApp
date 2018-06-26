@@ -23,8 +23,11 @@ export default class CustomTheme extends Component {
     this.themeDao = new ThemeDao();
     this.state = {}
   }
-  onSelectTheme() {
+  onSelectTheme(themeKey) {
   this.props.onClose()
+  this.themeDao.save(ThemeFlags[themeKey])
+//  DeviceEventEmitter.emit('ACTION_BASE', ACTION_HOME.A_THEME, ThemeFactory.createTheme(ThemeFlags[themeKey]))
+
   }
   getThemeItem(themeKey) {
     return <TouchableHighlight
