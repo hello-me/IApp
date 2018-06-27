@@ -15,11 +15,13 @@ import {
 import NavigationBar from '../../js/common/NavigationBar'
 import ViewUtils from '../util/ViewUtils'
 import FavoriteDao from '../expand/dao/FavoriteDao'
+import BackPressComponent from '../common/BackPressComponent'
 // const URL = 'http://www.imooc.com'
 const TRENDING_URL = 'https://github.com/'
 export default class RepositoryDetail extends Component {
   constructor(props) {
     super(props);
+    this.backPress=new BackPressComponent({backPress:(e)=>this.onBackPress(e)});
     var item = this.props.data.item? this.props.data.item:this.props.data
     this.url = item.html_url ? item.html_url
       : TRENDING_URL + item.fullName;
@@ -39,6 +41,16 @@ search() {
   url: this.searchText
   })
 }
+  componentDidMount(){
+    this.backPress.componentDidMount();/*调用*/
+  }
+  onBackPress(e){
+    this.onBack();
+    return true;
+  }
+  componentWillUnmount() {
+    this.backPress.componentWillUnmount();/*移除*/
+  }
 onBack() {
   if (this.state.canGoBack) {
    this.webView.goBack();
