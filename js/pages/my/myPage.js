@@ -75,7 +75,7 @@ export default class myPage extends BaseComponent {
    }
   }
   getItem(tag, icon, text) {
-  return ViewUtils.getSettingItem(() => this.onClick(tag), icon, text,{tintColor: '#6495ED'}, null)
+  return ViewUtils.getSettingItem(() => this.onClick(tag), icon, text,this.state.theme.styles.tabBarSelectedIcon, null)
   }
   render() {
   let navigationBar = <NavigationBar
@@ -91,8 +91,8 @@ export default class myPage extends BaseComponent {
         >
         <View style={[styles.item, {height: 90}]}>
           <View style={{alignItems: 'center', flexDirection: 'row'}}>
-          <Image source={require('../../../res/images/ic_trending.png')}
-          style={[{width:40, height: 40, marginRight:10},this.state.theme.styles.tabBarSelectedIcon]}
+          <Image source={require('../../../res/images/wanzi1.jpg')}
+          style={[{width:40, height: 40, marginRight:10}]}
           />
           <Text>GitHub Popular</Text>
           </View>
@@ -102,7 +102,7 @@ export default class myPage extends BaseComponent {
           marginRight: 10,
           height: 22,
           width: 22,
-          alignSelf: 'center'},this.state.theme.styles.tabBarSelectedIcon]}
+          alignSelf: 'center'}, this.state.theme.styles.tabBarSelectedIcon]}
           />
         </View>
         </TouchableHighlight>
